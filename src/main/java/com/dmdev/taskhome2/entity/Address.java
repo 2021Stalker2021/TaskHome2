@@ -30,5 +30,9 @@ public class Address {
     private String region;
 
     @OneToMany(mappedBy = "address", cascade = CascadeType.ALL)
+    /*
+        mappedBy в @OneToMany указывает, что владельцем отношения является Attraction, а Address
+        лишь отражает это отношение.
+     */
     private List<Attraction> attractions;
 }

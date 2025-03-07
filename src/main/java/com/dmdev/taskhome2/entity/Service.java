@@ -30,5 +30,10 @@ public class Service {
     private ServiceType serviceType;
 
     @ManyToMany(mappedBy = "services",cascade = CascadeType.ALL)
+    /*
+        @ManyToMany (обратная сторона отношения).
+        Потому что В Service используется mappedBy, чтобы указать, что владельцем отношения является
+        Attraction. Это позволяет избежать дублирования управления связями.
+     */
     private List<Attraction> attractions;
 }

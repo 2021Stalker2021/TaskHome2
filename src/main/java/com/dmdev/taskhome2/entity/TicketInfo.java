@@ -28,5 +28,6 @@ public class TicketInfo {
     private Boolean availability;
 
     @OneToOne(mappedBy = "ticketInfo", cascade = CascadeType.ALL)
+    // mappedBy в TicketInfo указывает, что Attraction управляет этим отношением.
     private Attraction attraction;
 }

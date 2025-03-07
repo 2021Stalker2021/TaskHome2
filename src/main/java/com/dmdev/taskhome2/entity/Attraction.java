@@ -43,5 +43,9 @@ public class Attraction {
             joinColumns = @JoinColumn(name = "attraction_id"),
             inverseJoinColumns = @JoinColumn(name = "service_id")
     )
+    /*
+        Владельцем отношения является Attraction, так как в ней указан
+        @JoinTable, а в Service используется mappedBy.
+     */
     private List<Service> services;
 }
