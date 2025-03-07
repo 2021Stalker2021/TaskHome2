@@ -1,13 +1,22 @@
 spring:
   application:
     name: TaskHome2
+
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
+    show-sql: true # Показывать SQL-запросы в логах (для разработки)
+    properties:
+      hibernate:
+        format_sql: true # Форматировать SQL-запросы для удобства чтения
+
+
   datasource:
-    url: jdbc:postgresql://localhost:5435/intensive_db
-    username: test_user
-    password: test_password
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5435/intensive_db              # URL моей базы данных
+    username: test_user                                             # Имя пользователя БД
+    password: test_password                                         # Пароль пользователя БД
+    driver-class-name: org.postgresql.Driver                        # Драйвер СУБД
+
   liquibase:
-    change-log: classpath:/db/changelog/changelog.xml
+    enabled: true                                                   # Включить Liquibase
+    change-log: classpath:db/changelog/db.changelog-master.yaml     # Путь к главному changelog
