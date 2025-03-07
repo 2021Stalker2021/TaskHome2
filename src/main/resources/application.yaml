@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: TaskHome2
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://localhost:5435/intensive_db
+    username: test_user
+    password: test_password
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: classpath:/db/changelog/changelog.xml
