@@ -7,8 +7,7 @@ import com.dmdev.taskhome2.exception.DuplicateAddressException;
 import com.dmdev.taskhome2.mappers.AddressMapper;
 import com.dmdev.taskhome2.repository.AddressRepository;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +17,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AddressService {
 
-    private static final Logger log = LoggerFactory.getLogger(AddressService.class);
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
 

@@ -30,14 +30,16 @@ public class AddressController {
 
     @PostMapping
     public ResponseEntity<AddressDto> createAddress(@RequestBody AddressDto addressDto) {
-        AddressDto createdAddress = addressService.createAddress(addressDto);
+//        AddressDto createdAddress = addressService.createAddress(addressDto);
+//
+//        URI location = ServletUriComponentsBuilder
+//                .fromCurrentRequest()                           // /api/v1/addresses
+//                .path("/{id}")                                  // Добавляем /{id} к URL
+//                .buildAndExpand(createdAddress.getId())         // Заменяем {id} на реальный UUID
+//                .toUri();
+//
+//        return ResponseEntity.created(location).body(createdAddress);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()                           // /api/v1/addresses
-                .path("/{id}")                                  // Добавляем /{id} к URL
-                .buildAndExpand(createdAddress.getId())         // Заменяем {id} на реальный UUID
-                .toUri();
-
-        return ResponseEntity.created(location).body(createdAddress);
+        return ResponseEntity.ok(addressService.createAddress(addressDto));
     }
 }
