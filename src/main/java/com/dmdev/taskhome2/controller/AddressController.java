@@ -30,16 +30,32 @@ public class AddressController {
 
     @PostMapping
     public ResponseEntity<AddressDto> createAddress(@RequestBody AddressDto addressDto) {
-//        AddressDto createdAddress = addressService.createAddress(addressDto);
-//
-//        URI location = ServletUriComponentsBuilder
-//                .fromCurrentRequest()                           // /api/v1/addresses
-//                .path("/{id}")                                  // Добавляем /{id} к URL
-//                .buildAndExpand(createdAddress.getId())         // Заменяем {id} на реальный UUID
-//                .toUri();
-//
-//        return ResponseEntity.created(location).body(createdAddress);
+        AddressDto createdAddress = addressService.createAddress(addressDto);
 
-        return ResponseEntity.ok(addressService.createAddress(addressDto));
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()                           // /api/v1/addresses
+                .path("/{id}")                                  // Добавляем /{id} к URL
+                .buildAndExpand(createdAddress.getId())         // Заменяем {id} на реальный UUID
+                .toUri();
+
+        return ResponseEntity.created(location).body(createdAddress);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AddressDto> updateAddress(@PathVariable UUID id, @RequestBody AddressDto addressDto) {
+        return ResponseEntity.ok(addressService.updateAddress(id, addressDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<AddressDto> deleteAddress(@PathVariable UUID id) {
+        return addressService.deleteAddress(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/delete/all")
+    public ResponseEntity<Void> deleteAllAddresses() {
+        addressService.deleteAllAddresses();
+        return ResponseEntity.noContent().build();
     }
 }

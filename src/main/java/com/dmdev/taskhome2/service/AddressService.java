@@ -8,7 +8,6 @@ import com.dmdev.taskhome2.mappers.AddressMapper;
 import com.dmdev.taskhome2.repository.AddressRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,12 +64,14 @@ public class AddressService {
     }
 
     @Transactional
-    public void deleteAddress(UUID id) {
-        try {
-            addressRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new AddressNotFoundException("Address not found");
-        }
+    public boolean deleteAddress(UUID id) {
+        return addressRepository.findById(id)
+                .map(entity -> {
+                    addressRepository.delete(entity);
+                    addressRepository.flush();
+                    return true;
+                })
+                .orElse(false);
     }
 
     @Transactional
