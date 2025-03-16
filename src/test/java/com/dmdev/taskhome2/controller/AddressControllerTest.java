@@ -1,10 +1,14 @@
 package com.dmdev.taskhome2.controller;
 
-import lombok.SneakyThrows;
+import com.dmdev.taskhome2.dto.AddressDto;
+import com.dmdev.taskhome2.repository.AddressRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -13,9 +17,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.util.UUID;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Testcontainers
 @SpringBootTest
@@ -23,7 +28,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AddressControllerTest {
 
     @Autowired
-    private MockMvc mvc;
+    private MockMvc mockMvc;
+
+    @Autowired
+    private AddressRepository addressRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Container
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(DockerImageName.parse("postgres:13"));
@@ -36,12 +47,169 @@ class AddressControllerTest {
         registry.add("spring.jpa.generate-ddl", () -> true);
     }
 
+    @BeforeEach
+    void setUp() {
+        addressRepository.deleteAll(); // Очищаем базу данных перед каждым тестом
+    }
+
     @Test
-    @SneakyThrows
-    void getAllAddresses() {
-        var result = mvc.perform(get("http://localhost:8080/api/v1/addresses"))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
-        assertNotNull(result);
+    void getAllAddresses_shouldReturnEmptyList() throws Exception {
+        mockMvc.perform(get("/api/v1/addresses"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]")); // Ожидаем пустой массив
+    }
+
+    @Test
+    void createAddress_shouldReturnCreatedAddress() throws Exception {
+        AddressDto addressDto = AddressDto.builder()
+                .building(10)
+                .street("Lenina")
+                .city("Moscow")
+                .region("Central")
+                .build();
+
+        mockMvc.perform(post("/api/v1/addresses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(addressDto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.building").value(10))
+                .andExpect(jsonPath("$.street").value("Lenina"))
+                .andExpect(jsonPath("$.city").value("Moscow"))
+                .andExpect(jsonPath("$.region").value("Central"));
+    }
+
+    @Test
+    void getAddressById_shouldReturnAddress() throws Exception {
+        // Создаем адрес
+        AddressDto addressDto = AddressDto.builder()
+                .building(10)
+                .street("Lenina")
+                .city("Moscow")
+                .region("Central")
+                .build();
+
+        String response = mockMvc.perform(post("/api/v1/addresses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(addressDto)))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        AddressDto createdAddress = objectMapper.readValue(response, AddressDto.class);
+
+        // Получаем адрес по ID
+        mockMvc.perform(get("/api/v1/addresses/{id}", createdAddress.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(createdAddress.getId().toString()))
+                .andExpect(jsonPath("$.building").value(10))
+                .andExpect(jsonPath("$.street").value("Lenina"))
+                .andExpect(jsonPath("$.city").value("Moscow"))
+                .andExpect(jsonPath("$.region").value("Central"));
+    }
+
+    @Test
+    void updateAddress_shouldReturnUpdatedAddress() throws Exception {
+        // Создаем адрес
+        AddressDto addressDto = AddressDto.builder()
+                .building(10)
+                .street("Lenina")
+                .city("Moscow")
+                .region("Central")
+                .build();
+
+        String response = mockMvc.perform(post("/api/v1/addresses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(addressDto)))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        AddressDto createdAddress = objectMapper.readValue(response, AddressDto.class);
+
+        // Обновляем адрес
+        AddressDto updatedAddressDto = AddressDto.builder()
+                .building(20)
+                .street("Nevsky Prospect")
+                .city("Saint Petersburg")
+                .region("Northwestern")
+                .build();
+
+        mockMvc.perform(put("/api/v1/addresses/{id}", createdAddress.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedAddressDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.building").value(20))
+                .andExpect(jsonPath("$.street").value("Nevsky Prospect"))
+                .andExpect(jsonPath("$.city").value("Saint Petersburg"))
+                .andExpect(jsonPath("$.region").value("Northwestern"));
+    }
+
+    @Test
+    void deleteAddress_shouldReturnNoContent() throws Exception {
+        // Создаем адрес
+        AddressDto addressDto = AddressDto.builder()
+                .building(10)
+                .street("Lenina")
+                .city("Moscow")
+                .region("Central")
+                .build();
+
+        String response = mockMvc.perform(post("/api/v1/addresses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(addressDto)))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        AddressDto createdAddress = objectMapper.readValue(response, AddressDto.class);
+
+        // Удаляем адрес
+        mockMvc.perform(delete("/api/v1/addresses/{id}", createdAddress.getId()))
+                .andExpect(status().isNoContent()); // Ожидаем 204 No Content
+    }
+
+    @Test
+    void deleteAddress_shouldReturnNotFound() throws Exception {
+        // Пытаемся удалить несуществующий адрес
+        UUID nonExistentId = UUID.randomUUID();
+
+        mockMvc.perform(delete("/api/v1/addresses/{id}", nonExistentId))
+                .andExpect(status().isNotFound()); // Ожидаем 404 Not Found
+    }
+
+    @Test
+    void deleteAllAddresses_shouldReturnNoContent() throws Exception {
+        // Создаем несколько адресов
+        AddressDto addressDto1 = AddressDto.builder()
+                .building(10)
+                .street("Lenina")
+                .city("Moscow")
+                .region("Central")
+                .build();
+
+        AddressDto addressDto2 = AddressDto.builder()
+                .building(20)
+                .street("Nevsky Prospect")
+                .city("Saint Petersburg")
+                .region("Northwestern")
+                .build();
+
+        mockMvc.perform(post("/api/v1/addresses")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(addressDto1)));
+
+        mockMvc.perform(post("/api/v1/addresses")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(addressDto2)));
+
+        // Удаляем все адреса
+        mockMvc.perform(delete("/api/v1/addresses/delete/all"))
+                .andExpect(status().isNoContent());
+
+        // Проверяем, что адресов больше нет
+        mockMvc.perform(get("/api/v1/addresses"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
     }
 }
