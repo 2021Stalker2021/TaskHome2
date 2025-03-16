@@ -29,7 +29,7 @@ public class Service {
     @Column(name = "service_type")
     private ServiceType serviceType;
 
-    @ManyToMany(mappedBy = "services",cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "services", cascade = CascadeType.ALL)
     /*
         @ManyToMany (обратная сторона отношения).
         Потому что В Service используется mappedBy, чтобы указать, что владельцем отношения является

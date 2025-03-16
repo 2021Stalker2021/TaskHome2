@@ -75,11 +75,11 @@ public class AttractionService {
     }
 
     @Transactional
-    public AttractionDto updateAttraction(UUID id, AttractionDto addressDto) {
+    public AttractionDto updateAttraction(UUID id, AttractionDto attractionDto) {
         Attraction existingAttraction = attractionRepository.findById(id)
                 .orElseThrow(() -> new AttractionNotFoundException("Address not found"));
 
-        Attraction updatedAttraction = attractionMapper.toEntity(addressDto);
+        Attraction updatedAttraction = attractionMapper.toEntity(attractionDto);
         updatedAttraction.setId(existingAttraction.getId()); // ID должен остаться прежним
         // поля будут установлены из dto
 
