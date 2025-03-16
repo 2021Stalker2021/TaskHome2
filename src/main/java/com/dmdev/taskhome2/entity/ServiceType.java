@@ -9,4 +9,6 @@ public enum ServiceType {
     STRIKE_BALL,
     SPA,
     TOUR,
+    AUDIO_GUIDE,
+    BOAT_RENTAL
 }
