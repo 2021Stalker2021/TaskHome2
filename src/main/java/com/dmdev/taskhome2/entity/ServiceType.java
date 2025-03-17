@@ -10,5 +10,7 @@ public enum ServiceType {
     SPA,
     TOUR,
     AUDIO_GUIDE,
-    BOAT_RENTAL
+    BOAT_RENTAL,
+    FREE,
+    PAID
 }

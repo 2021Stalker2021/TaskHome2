@@ -7,5 +7,6 @@ public enum AttractionType {
     AQUARIUM,
     CASTLE,
     MEMORIAL,
-    ENSEMBLES
+    ENSEMBLES,
+    LANDMARK
 }

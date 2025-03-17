@@ -1,4 +1,4 @@
-package com.dmdev.taskhome2.controller;
+package com.dmdev.taskhome2.controller.integration;
 
 import com.dmdev.taskhome2.dto.ServiceDto;
 import com.dmdev.taskhome2.entity.ServiceType;

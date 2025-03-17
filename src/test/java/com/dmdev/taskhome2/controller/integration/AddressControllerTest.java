@@ -1,4 +1,4 @@
-package com.dmdev.taskhome2.controller;
+package com.dmdev.taskhome2.controller.integration;
 
 import com.dmdev.taskhome2.dto.AddressDto;
 import com.dmdev.taskhome2.repository.AddressRepository;
@@ -49,14 +49,14 @@ class AddressControllerTest {
 
     @BeforeEach
     void setUp() {
-        addressRepository.deleteAll(); // Очищаем базу данных перед каждым тестом
+        addressRepository.deleteAll(); // Очистка базы данных перед каждым тестом
     }
 
     @Test
     void getAllAddresses_shouldReturnEmptyList() throws Exception {
         mockMvc.perform(get("/api/v1/addresses"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("[]")); // Ожидаем пустой массив
+                .andExpect(content().json("[]")); // Должен быть пустой массив
     }
 
     @Test
@@ -81,7 +81,7 @@ class AddressControllerTest {
 
     @Test
     void getAddressById_shouldReturnAddress() throws Exception {
-        // Создаем адрес
+        // Создание адреса
         AddressDto addressDto = AddressDto.builder()
                 .building(10)
                 .street("Lenina")
@@ -98,7 +98,7 @@ class AddressControllerTest {
 
         AddressDto createdAddress = objectMapper.readValue(response, AddressDto.class);
 
-        // Получаем адрес по ID
+        // Получение адреса по ID
         mockMvc.perform(get("/api/v1/addresses/{id}", createdAddress.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(createdAddress.getId().toString()))
@@ -110,7 +110,7 @@ class AddressControllerTest {
 
     @Test
     void updateAddress_shouldReturnUpdatedAddress() throws Exception {
-        // Создаем адрес
+        // Создание адреса
         AddressDto addressDto = AddressDto.builder()
                 .building(10)
                 .street("Lenina")
@@ -127,7 +127,7 @@ class AddressControllerTest {
 
         AddressDto createdAddress = objectMapper.readValue(response, AddressDto.class);
 
-        // Обновляем адрес
+        // Обновление адреса
         AddressDto updatedAddressDto = AddressDto.builder()
                 .building(20)
                 .street("Nevsky Prospect")
@@ -147,7 +147,7 @@ class AddressControllerTest {
 
     @Test
     void deleteAddress_shouldReturnNoContent() throws Exception {
-        // Создаем адрес
+        // Создание адреса
         AddressDto addressDto = AddressDto.builder()
                 .building(10)
                 .street("Lenina")
@@ -164,23 +164,23 @@ class AddressControllerTest {
 
         AddressDto createdAddress = objectMapper.readValue(response, AddressDto.class);
 
-        // Удаляем адрес
+        // Удаление адреса
         mockMvc.perform(delete("/api/v1/addresses/{id}", createdAddress.getId()))
-                .andExpect(status().isNoContent()); // Ожидаем 204 No Content
+                .andExpect(status().isNoContent()); // Проверка на: 204 No Content
     }
 
     @Test
     void deleteAddress_shouldReturnNotFound() throws Exception {
-        // Пытаемся удалить несуществующий адрес
+        // Попытка удалить несуществующий адрес
         UUID nonExistentId = UUID.randomUUID();
 
         mockMvc.perform(delete("/api/v1/addresses/{id}", nonExistentId))
-                .andExpect(status().isNotFound()); // Ожидаем 404 Not Found
+                .andExpect(status().isNotFound()); // Проверка на: 404 Not Found
     }
 
     @Test
     void deleteAllAddresses_shouldReturnNoContent() throws Exception {
-        // Создаем несколько адресов
+        // Создание нескольких адресов
         AddressDto addressDto1 = AddressDto.builder()
                 .building(10)
                 .street("Lenina")

@@ -1,4 +1,4 @@
-package com.dmdev.taskhome2.controller;
+package com.dmdev.taskhome2.controller.integration;
 
 import com.dmdev.taskhome2.dto.AddressDto;
 import com.dmdev.taskhome2.dto.AttractionDto;
@@ -55,7 +55,7 @@ class AttractionControllerTest {
 
     @BeforeEach
     void setUp() {
-        attractionRepository.deleteAll(); // Очищаем базу данных перед каждым тестом
+        attractionRepository.deleteAll(); // Очистка базы данных перед каждым тестом
     }
 
     @Test
@@ -137,7 +137,7 @@ class AttractionControllerTest {
                 ))
                 .build();
 
-        // Создаем аттракцион
+        // Создаем достопремечательность
         String response = mockMvc.perform(post("/api/v1/attractions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(attractionDto)))
@@ -190,12 +190,12 @@ class AttractionControllerTest {
                 ))
                 .build();
 
-        // Создаем аттракцион
+        // Создаем достопремечательность
         mockMvc.perform(post("/api/v1/attractions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(attractionDto)));
 
-        // Ищем аттракцион по имени сервиса
+        // Ищем достопремечательность по имени сервиса
         mockMvc.perform(get("/api/v1/attractions/service/name")
                         .param("serviceName", "Audio guide"))
                 .andExpect(status().isOk())
@@ -231,12 +231,12 @@ class AttractionControllerTest {
                 ))
                 .build();
 
-        // Создаем аттракцион
+        // Создаем достопремечательность
         mockMvc.perform(post("/api/v1/attractions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(attractionDto)));
 
-        // Ищем аттракцион по городу
+        // Ищем достопремечательность по городу
         mockMvc.perform(get("/api/v1/attractions/address/city")
                         .param("city", "Moscow"))
                 .andExpect(status().isOk())
@@ -271,12 +271,12 @@ class AttractionControllerTest {
                 ))
                 .build();
 
-        // Создаем аттракцион
+        // Создаем достопремечательность
         mockMvc.perform(post("/api/v1/attractions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(attractionDto)));
 
-        // Ищем аттракцион по цене билета
+        // Ищем достопремечательность по цене билета
         mockMvc.perform(get("/api/v1/attractions/ticket/price")
                         .param("ticketPrice", "500"))
                 .andExpect(status().isOk())
@@ -311,7 +311,7 @@ class AttractionControllerTest {
                 ))
                 .build();
 
-        // Создаем аттракцион
+        // Создаем достопремечательность
         String response = mockMvc.perform(post("/api/v1/attractions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(attractionDto)))
@@ -321,7 +321,7 @@ class AttractionControllerTest {
 
         AttractionDto createdAttraction = objectMapper.readValue(response, AttractionDto.class);
 
-        // Обновляем аттракцион
+        // Обновляем достопремечательность
         AttractionDto updatedAttractionDto = AttractionDto.builder()
                 .name("Updated Museum")
                 .description("Updated Historical museum")
@@ -383,7 +383,7 @@ class AttractionControllerTest {
                 ))
                 .build();
 
-        // Создаем аттракцион
+        // Создаем достопремечательность
         String response = mockMvc.perform(post("/api/v1/attractions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(attractionDto)))
@@ -400,7 +400,7 @@ class AttractionControllerTest {
 
     @Test
     void deleteAllAttractions_shouldReturnNoContent() throws Exception {
-        // Создаем несколько аттракционов
+        // Создаем несколько достопремечательностей
         AttractionDto attractionDto1 = AttractionDto.builder()
                 .name("Museum")
                 .description("Historical museum")
@@ -457,11 +457,11 @@ class AttractionControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(attractionDto2)));
 
-        // Удаляем все аттракционы
+        // Удаляем все достопремечательности
         mockMvc.perform(delete("/api/v1/attractions/delete/all"))
                 .andExpect(status().isNoContent());
 
-        // Проверяем, что аттракционы удалены
+        // Проверяем, что достопремечательности удалены
         mockMvc.perform(get("/api/v1/attractions"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));
